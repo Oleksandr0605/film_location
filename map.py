@@ -28,6 +28,20 @@ def read_data(path: str) -> list:
     return year_location
 
 
+def distance(location: tuple, year_location: list) -> list:
+    """
+    """
+    distances = []
+    for loc in year_location:
+        distances.append(haversine(location, loc))
+
+
+geolocator = Nominatim(user_agent="Oleksandr")
+location = geolocator.geocode("Старі Кути")
+print(location.address)
+print((location.latitude, location.longitude))
+
+
 def main():
     """
     """
