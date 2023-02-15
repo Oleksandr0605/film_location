@@ -33,14 +33,14 @@ def main():
     """
     parser = argparse.ArgumentParser(description="argpars")
 
-    parser.add_argument("year", type=str)
+    parser.add_argument("year", type=int)
     parser.add_argument("latitude", type=str)
     parser.add_argument("longitude", type=str)
     parser.add_argument("path_dataset", type=str)
     args = parser.parse_args()
     
     year_location = read_data(args.path_dataset)
-    year_location = [elm for elm in year_location if elm[0] == args.year]
+    year_location = [elm for elm in year_location if int(elm[0]) == args.year]
 
     map = folium.Map(tiles="Stamen Terrain",
                 location=[args.latitude, args.longitude],
