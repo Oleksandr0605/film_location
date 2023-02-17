@@ -31,6 +31,8 @@ def read_data(path: str) -> list:
 def get_locations(year_location: list) -> list:
     """
     """
+    for tpl in year_location:
+        locations.append(())
     locations = []
 
 
