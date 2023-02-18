@@ -2,20 +2,24 @@ import argparse
 import folium
 from geopy.geocoders import Nominatim
 from haversine import haversine, Unit
-from geopy import GeocodeUnavailable
 
 
 def read_data(path: str) -> list:
     """
+    reads data from file about films and return list of tuples with year and the place where it was filmed
+
+    >>> print(read_data("locations.list")[1])
+    ('2015', 'Coventry, West Midlands, England, UK')
     """
     with open(path, "r") as fff:
         file = fff.readlines()
     file = file[15:]
     year = ""
     year_location = []
-    for jnd, film in enumerate(file):
+    for jnd, film in enumerate(file[:len(file)//1000]):
         for ind, symb in enumerate(film):
-            if symb == "(" and 49 <= ord(film[ind + 1]) <= 57:
+            if symb == "(" and 49 <= ord(film[ind + 1]) <= 57 and 48 <= ord(film[ind + 3]) <= 57 and\
+                (film[ind + 5] == ")" or film[ind + 5] == "/"):
                 year = film[ind + 1:ind + 5]
                 break
         file[jnd] = file[jnd].replace("\t", "|")
@@ -36,12 +40,6 @@ def distance(location: tuple, year_location: list) -> list:
         distances.append(haversine(location, loc))
 
 
-geolocator = Nominatim(user_agent="Oleksandr")
-location = geolocator.geocode("Старі Кути")
-print(location.address)
-print((location.latitude, location.longitude))
-
-
 def main():
     """
     """
@@ -52,9 +50,12 @@ def main():
     parser.add_argument("longitude", type=str)
     parser.add_argument("path_dataset", type=str)
     args = parser.parse_args()
-    
+
     year_location = read_data(args.path_dataset)
+
     year_location = [elm for elm in year_location if int(elm[0]) == args.year]
+
+    locations = get_locations(year_location)
 
     map = folium.Map(tiles="Stamen Terrain",
                 location=[args.latitude, args.longitude],
@@ -64,3 +65,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # import doctest
+    # print(doctest.testmod())
