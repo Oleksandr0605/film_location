@@ -28,7 +28,11 @@ def read_data(path: str) -> list:
             year_location.append((year, file[jnd][-2]))
         else:
             year_location.append((year, file[jnd][-3]))
-    return year_location
+    return year_location[:100]
+
+# geolocator = Nominatim(user_agent="get_location")
+# location = geolocator.geocode("Старі Кути")
+# print(location.latitude)
 
 def get_locations(year_location: list) -> list:
     """
@@ -49,19 +53,23 @@ def get_locations(year_location: list) -> list:
                 break
             except:
                 continue
-        if not flag:
+        if not flag and location != None:
             locations.append((location.latitude, location.longitude))
         else:
             continue
     return locations
 
 
-def distance(location: tuple, year_location: list) -> list:
+def distance(location: tuple, locations) -> list:
     """
     """
     distances = []
-    for loc in year_location:
-        distances.append(haversine(location, loc))
+    for loc in locations:
+        try:
+            distances.append((haversine(location, loc), loc))
+        except:
+            continue
+    return distances
 
 
 def main():
@@ -70,16 +78,20 @@ def main():
     parser = argparse.ArgumentParser(description="argpars")
 
     parser.add_argument("year", type=int)
-    parser.add_argument("latitude", type=str)
-    parser.add_argument("longitude", type=str)
+    parser.add_argument("latitude", type=float)
+    parser.add_argument("longitude", type=float)
     parser.add_argument("path_dataset", type=str)
     args = parser.parse_args()
 
+    location = (args.latitude, args.longitude)
+
     year_location = read_data(args.path_dataset)
 
-    year_location = [elm for elm in year_location if int(elm[0]) == args.year]
+    # year_location = [elm for elm in year_location if int(elm[0]) == args.year]
 
     locations = get_locations(year_location)
+
+    distances = distance(location, locations)
 
     map = folium.Map(tiles="Stamen Terrain",
                 location=[args.latitude, args.longitude],
@@ -91,3 +103,5 @@ if __name__ == "__main__":
     main()
     # import doctest
     # print(doctest.testmod())
+    # print(haversine((49.83826, 24.02324), (53.0666687, -121.5166749)))
+    pass
