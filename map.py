@@ -31,9 +31,6 @@ def read_data(path: str) -> list:
             year_location.append((year, file[jnd][-3]))
     return year_location
 
-# geolocator = Nominatim(user_agent="get_location")
-# location = geolocator.geocode("Старі Кути")
-# print(location.latitude)
 
 def get_locations(year_location: list) -> list:
     """
@@ -99,8 +96,6 @@ def main():
     distances = distance(location, locations)
 
     distances = sorted(distances)
-
-    # print(distances)
 
     map = folium.Map(tiles="Stamen Terrain",
                 location=list(location),
