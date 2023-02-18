@@ -2,6 +2,7 @@ import argparse
 import folium
 from geopy.geocoders import Nominatim
 from haversine import haversine, Unit
+from math import fabs
 
 
 def read_data(path: str) -> list:
@@ -28,7 +29,7 @@ def read_data(path: str) -> list:
             year_location.append((year, file[jnd][-2]))
         else:
             year_location.append((year, file[jnd][-3]))
-    return year_location[:100]
+    return year_location[:10000]
 
 # geolocator = Nominatim(user_agent="get_location")
 # location = geolocator.geocode("Старі Кути")
@@ -60,8 +61,12 @@ def get_locations(year_location: list) -> list:
     return locations
 
 
-def distance(location: tuple, locations) -> list:
+def distance(location: tuple, locations: list) -> list:
     """
+    get distances from your location to every location of films
+
+    >>> distance((53.0162014, -2.1812607), [(42.9868853, 19.5180992), (41.0671774, 29.0432713)])
+    [(1949.7846486566084, (42.9868853, 19.5180992)), (2682.981082694581, (41.0671774, 29.0432713))]
     """
     distances = []
     for loc in locations:
@@ -87,21 +92,24 @@ def main():
 
     year_location = read_data(args.path_dataset)
 
-    # year_location = [elm for elm in year_location if int(elm[0]) == args.year]
+    year_location = [elm for elm in year_location if int(elm[0]) == args.year]
 
     locations = get_locations(year_location)
 
     distances = distance(location, locations)
 
+    distances = sorted(distances)
+
+    # print(distances)
+
     map = folium.Map(tiles="Stamen Terrain",
-                location=[args.latitude, args.longitude],
-                zoom_start=17)
-    map.save("map.html")
+                location=list(location),
+                zoom_start=3)
+    for ind in range(10):
+        map.add_child(folium.Marker(distances[ind][1],
+                                    icon=folium.Icon()))
+    map.save("map1.html")
     
 
 if __name__ == "__main__":
     main()
-    # import doctest
-    # print(doctest.testmod())
-    # print(haversine((49.83826, 24.02324), (53.0666687, -121.5166749)))
-    pass
