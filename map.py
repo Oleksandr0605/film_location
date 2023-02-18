@@ -29,7 +29,7 @@ def read_data(path: str) -> list:
             year_location.append((year, file[jnd][-2]))
         else:
             year_location.append((year, file[jnd][-3]))
-    return year_location[:10000]
+    return year_location
 
 # geolocator = Nominatim(user_agent="get_location")
 # location = geolocator.geocode("Старі Кути")
